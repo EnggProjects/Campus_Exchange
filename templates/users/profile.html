@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .profile-card {
+        background-color: #ffffff;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        margin-bottom: 20px;
+        transition: transform 0.3s ease;
+    }
+    .profile-card:hover {
+        transform: translateY(-5px);
+    }
+    .profile-username {
+        font-size: 2em;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+    .profile-info {
+        margin-bottom: 10px;
+    }
+    .profile-label {
+        font-weight: bold;
+    }
+    .update-btn {
+        background-color: #003366;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        font-size: 1em;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    .update-btn:hover {
+        background-color: #004080;
+    }
+</style>
+
+<div class="profile-card">
+    <div class="profile-username">{{ user.username }}</div>
+    
+    <div class="profile-info">
+        <span class="profile-label">Email:</span> {{ user.email }}
+    </div>
+    <div class="profile-info">
+        <span class="profile-label">College:</span> {{ user.college }}
+    </div>
+    <div class="profile-info">
+        <span class="profile-label">Products uploaded:</span> {{ products_count }}
+    </div>
+    <div class="profile-info">
+        <span class="profile-label">Bio:</span> {{ user.bio }}
+    </div>
+    <div class="profile-info">
+        <span class="profile-label">Location:</span> {{ user.location }}
+    </div>
+    <div class="profile-info">
+        <span class="profile-label">Birth Date:</span> {{ user.birth_date }}
+    </div>
+</div>
+
+<a href="{% url 'update_profile' %}" class="update-btn">Update Profile</a>
+{% endblock %}

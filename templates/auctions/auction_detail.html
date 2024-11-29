@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block title %}Auction Detail - Campus Exchange{% endblock %}
+
+{% block content %}
+<style>
+    .auction-card {
+        max-width: 600px; /* Maximum width of the card */
+        margin: 20px auto; /* Center the card */
+        padding: 20px; /* Padding inside the card */
+        background-color: white; /* Card background color */
+        border-radius: 8px; /* Rounded corners */
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Shadow for the card */
+    }
+
+    .auction-header {
+        background-color: #003366; /* Dark blue background for header */
+        color: white; /* White text for the header */
+        padding: 10px; /* Padding around header */
+        border-radius: 8px 8px 0 0; /* Rounded corners at the top */
+        text-align: center; /* Center align text */
+        margin: -20px -20px 20px -20px; /* Stretch header beyond card edges */
+    }
+
+    .bid-table {
+        width: 100%; /* Full width */
+        border-collapse: collapse; /* Collapse borders */
+        margin: 20px 0; /* Margin around the table */
+        background-color: white; /* Light shade of dark blue */
+        border-radius: 5px; /* Rounded corners */
+        overflow: hidden; /* Hide overflow */
+    }
+
+    .bid-table th, .bid-table td {
+        padding: 12px; /* Padding inside cells */
+        text-align: left; /* Align text to the left */
+        border-bottom: 1px solid #ddd; /* Bottom border for cells */
+    }
+
+    .bid-table th {
+        background-color: #003366; /* Dark blue for header */
+        color: white; /* White text for header */
+    }
+
+    .place-bid-button {
+        background-color: #003366; /* Dark blue for button */
+        color: white; /* White text */
+        padding: 10px 20px; /* Padding for button */
+        border: none; /* No border */
+        border-radius: 5px; /* Rounded corners */
+        font-size: 1em; /* Font size for button */
+        cursor: pointer; /* Pointer on hover */
+        transition: background-color 0.3s; /* Transition for hover */
+        margin-top: 20px; /* Margin above button */
+    }
+
+    .place-bid-button:hover {
+        background-color: #0056b3; /* Lighter shade on hover */
+    }
+</style>
+
+<div class="auction-card">
+    <div class="auction-header">
+        <h2 style="color: white;">Auction for: {{ auction.product.title }}</h2>
+    </div>
+    
+    <p><strong>Auction ends at:</strong> {{ auction.end_time|date:"F j, Y, g:i a" }}</p>
+    <div id="countdown"></div>
+
+    <script>
+        // Start the countdown timer
+        document.addEventListener('DOMContentLoaded', function() {
+            var endTime = new Date("{{ auction.end_time|date:'c' }}").getTime();
+            startCountdown(endTime);
+        });
+    </script>
+
+    <h3>Current Highest Bid:</h3>
+    <h4>
+        {% if highest_bid %}
+            ₹{{ highest_bid.amount }} by {{ highest_bid.bidder.username }}
+        {% else %}
+            No bids yet
+        {% endif %}
+    </h4>
+
+    <!-- Bids Table -->
+    <h3>Bids</h3>
+    <table class="bid-table">
+        <thead>
+            <tr>
+                <th>Bid Amount</th>
+                <th>Bidder</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for bid in bids %}
+                <tr>
+                    <td>
+                        {% if bid == highest_bid %}
+                            <strong>₹{{ bid.amount }}</strong> (Highest Bid)
+                        {% else %}
+                            ₹{{ bid.amount }}
+                        {% endif %}
+                    </td>
+                    <td>{{ bid.bidder.username }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="2">No bids placed yet.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Bid form -->
+    {% if user.is_authenticated %}
+        <form method="POST" action="{% url 'place_bid' auction.pk %}">
+            {% csrf_token %}
+            <label for="amount">Place your bid:</label>
+            <input type="number" name="amount" step="0.01" required>
+            <button type="submit" class="place-bid-button">Place Bid</button>
+        </form>
+    {% else %}
+        <p>You need to <a href="{% url 'login' %}">login</a> to place a bid.</p>
+    {% endif %}
+</div>
+{% endblock %}

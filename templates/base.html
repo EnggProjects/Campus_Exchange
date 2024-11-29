@@ -1,0 +1,214 @@
+<!-- templates/base.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Campus Exchange{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <!-- Adding Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    {% block extra_css %}{% endblock %}
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif; /* Changed font to Roboto */
+            color: black;  /* Changed font color to black */
+        }
+
+        header {
+            width: 100%;
+            background-color: #003366;  /* Dark blue background */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px 20px;
+        }
+
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 25px;  /* Increased gap between items */
+        }
+
+        nav li {
+            margin: 0;
+        }
+
+        nav a {
+            color: white;  /* Changed text color to white */
+            text-decoration: none;
+            font-size: 1.5em;  /* Increased font size */
+            font-weight: 700;  /* Made text bold */
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            letter-spacing: 0.5px;  /* Added slight letter spacing for better readability */
+        }
+
+        nav a:hover {
+            color: #FFE5B4;  /* Hover color */
+            transform: scale(1.05);  /* Slight grow effect on hover */
+        }
+
+        .badge {
+            background-color: #FFE5B4;
+            color: #003366;  /* Dark blue for badge text */
+            padding: 3px 8px;
+            border-radius: 50%;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .wrapper {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        main {
+            background-color: white;  /* Light background for main content */
+            padding: 20px;
+            border-radius: 8px;
+            font-size: 1.1em;  /* Increased base font size for main content */
+        }
+
+        /* Additional styling for better text hierarchy */
+        h1, h2, p {
+            color: black;  /* Black for headings and paragraph text */
+        }
+
+        /* Drawer styles */
+        .drawer {
+            position: fixed;
+            top: 0;
+            left: -250px; /* Start hidden off-screen */
+            width: 250px;
+            height: 100%;
+            background-color: #fff;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.5);
+            transition: left 0.3s ease;
+            z-index: 1000;
+        }
+
+        .drawer-header {
+            background-color: #003366; /* Match header color */
+            color: white;
+            padding: 15px;
+            font-size: 1.5em;
+            text-align: center;
+        }
+
+        .drawer ul {
+            list-style: none;
+            padding: 10px;
+            margin: 0;
+        }
+
+        .drawer li {
+            margin: 10px 0;
+        }
+
+        .drawer a {
+            color: black; /* Change link color in drawer */
+            text-decoration: none;
+            padding: 10px;
+            display: block;
+            transition: background-color 0.3s;
+        }
+
+        .drawer a:hover {
+            background-color: #f0f0f0; /* Hover effect */
+        }
+
+        .drawer-toggle {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            font-size: 2em;
+            color: white;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <span class="drawer-toggle" onclick="toggleDrawer()">&#9776;</span>
+        <nav>
+            <ul>
+                <li><a href="{% url 'home' %}">Home</a></li>
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'product_list' %}">ALL Products</a></li>
+                    <li>
+                        <a href="{% url 'my_chats' %}">
+                            My Chats
+                            {% if unread_message_count > 0 %}
+                            <span class="badge">{{ unread_message_count }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                    <li><a href="{% url 'my_products' %}">My Products</a></li>
+                    <li><a href="{% url 'create_product' %}">Sell Item</a></li>
+                    <li><a href="{% url 'logout' %}">Logout</a></li>
+                {% else %}
+                    <li><a href="{% url 'login' %}">Login</a></li>
+                    <li><a href="{% url 'register' %}">Register</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <div class="drawer" id="drawer">
+        <div class="drawer-header">
+            {% if user.is_authenticated %}
+                Welcome, {{ user.username }}!
+            {% else %}
+                <p>Please log in</p>
+            {% endif %}
+        </div>
+        <ul>
+            <li><a href="{% url 'home' %}">Home</a></li>
+            {% if user.is_authenticated %}
+                <li><a href="{% url 'product_list' %}">ALL Products</a></li>
+                <li><a href="{% url 'my_chats' %}">My Chats</a></li>
+                <li><a href="{% url 'my_products' %}">My Products</a></li>
+                <li><a href="{% url 'create_product' %}">Sell Item</a></li>
+                <li><a href="{% url 'logout' %}">Logout</a></li>
+                <li><a href="{% url 'profile' %}">My Profile</a></li>
+            {% else %}
+                <li><a href="{% url 'login' %}">Login</a></li>
+                <li><a href="{% url 'register' %}">Register</a></li>
+            {% endif %}
+        </ul>
+    </div>
+
+    <div class="wrapper">
+        <main>
+            {% block content %}
+            {% endblock %}
+        </main>
+    </div>
+
+    <script>
+        function toggleDrawer() {
+            const drawer = document.getElementById('drawer');
+            if (drawer.style.left === '0px') {
+                drawer.style.left = '-250px'; // Hide drawer
+            } else {
+                drawer.style.left = '0px'; // Show drawer
+            }
+        }
+    </script>
+</body>
+</html>

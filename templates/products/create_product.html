@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Product{% endblock %}
+
+{% block content %}
+<style>
+    /* Global page style */
+    body {
+        font-family: 'Roboto', sans-serif;
+        background-color: #f4f4f4;
+    }
+
+    /* Top padding to prevent title from hiding behind fixed headers */
+    .content-wrapper {
+        padding-top: 100px; /* Adjust this value if needed */
+        max-width: 600px;
+        margin: 0 auto; /* Center-align the card */
+    }
+
+    h2 {
+        text-align: center;
+        color: #003366; /* Dark blue */
+        margin-bottom: 20px;
+    }
+
+    .wrapper {
+        background-color: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+        margin: 20px auto;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+    }
+
+    label {
+        color: #003366;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="file"],
+    textarea {
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        width: 100%;
+        box-sizing: border-box;
+        transition: all 0.3s;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    input[type="file"]:focus,
+    textarea:focus {
+        border-color: #007bff; /* Blue border on focus */
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+    }
+
+    textarea {
+        min-height: 150px;
+        resize: vertical; /* Allow vertical resizing */
+    }
+
+    .btn {
+        background-color: #003366; /* Blue button */  
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .btn:hover {
+        background-color: #007bff; /* Darker blue on hover */
+    }
+
+    /* Additional styles for better responsiveness */
+    @media (max-width: 600px) {
+        .wrapper {
+            width: 90%; /* Ensure card is responsive */
+            padding: 15px;
+        }
+    }
+</style>
+
+<div class="content-wrapper">
+    <div class="wrapper">
+        <h2>Create a Product</h2>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}  <!-- Django renders form fields here -->
+            <button type="submit" class="btn">Submit</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

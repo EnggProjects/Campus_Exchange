@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .profile-card {
+        background-color: #ffffff;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        margin-bottom: 20px;
+        transition: transform 0.3s ease;
+    }
+    .profile-card:hover {
+        transform: translateY(-5px);
+    }
+    .profile-info {
+        margin-bottom: 15px;
+    }
+    .profile-label {
+        font-weight: bold;
+        display: block;
+        margin-bottom: 5px;
+    }
+    .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        font-size: 1em;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    .btn-primary {
+        background-color: #003366;
+        color: white;
+    }
+    .btn-primary:hover {
+        background-color: #004080;
+    }
+    .btn-secondary {
+        background-color: #6c757d;
+        color: white;
+    }
+    .btn-secondary:hover {
+        background-color: #5a6268;
+    }
+    .note-box {
+        background-color: #fff3cd;
+        border: 1px solid #ffeeba;
+        border-radius: 5px;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+    .note-title {
+        color: #856404;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+    .errorlist {
+        color: red;
+        list-style-type: none;
+        padding: 0;
+        margin: 5px 0;
+    }
+</style>
+
+<h1>Update Profile</h1>
+
+<div class="note-box">
+    <div class="note-title"><span style="color: red;">NOTE:</span></div>
+    <p>You can update your username, bio, location, and birth date here. Your email and college cannot be changed.</p>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">{{ message }}</div>
+    {% endfor %}
+{% endif %}
+
+<form method="POST">
+    {% csrf_token %}
+    <div class="profile-card">
+        {% for field in form %}
+            <div class="profile-info">
+                <label class="profile-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                    <ul class="errorlist">
+                    {% for error in field.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+    
+    <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a href="{% url 'profile' %}" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+{% endblock %}

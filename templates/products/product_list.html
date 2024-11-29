@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+
+{% block title %}Products Available{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        font-family: 'Roboto', sans-serif; /* Match font with base.html */
+        background-color: #f4f4f4; /* Light background for contrast */
+        margin: 0;
+        padding: 20px;
+    }
+
+    h2 {
+        text-align: center;
+        color: #003366; /* Dark blue */
+        margin-bottom: 20px;
+    }
+
+    .filter-form {
+        margin-bottom: 2rem;
+        padding: 1rem;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: flex-end; /* Align search section to the right */
+        gap: 10px; /* Space between elements */
+    }
+
+    .search-section {
+        flex: 1; /* Allow search section to take remaining space */
+    }
+
+    .price-filter-section {
+        display: flex;
+        gap: 1rem;
+        display: none; /* Initially hide the price filter section */
+    }
+
+    .price-input {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .price-input label {
+        margin-bottom: 0.5rem;
+    }
+
+    input[type="number"],
+    input[type="text"] {
+        padding: 0.5rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+
+    select {
+        padding: 0.5rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+
+    .search-button,
+    .filter-button {
+        padding: 0.5rem 1rem;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .search-button:hover,
+    .filter-button:hover {
+        background-color: #0056b3;
+    }
+
+    .product-list {
+        display: flex;
+        flex-wrap: wrap; /* Wrap products to next line */
+        justify-content: center; /* Center align products */
+        margin-top: 20px;
+    }
+
+    .product-card {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        margin: 15px;
+        padding: 20px;
+        max-width: 250px; /* Fixed width for cards */
+        text-align: center; /* Center align text */
+        transition: transform 0.3s; /* Transition for hover effect */
+    }
+
+    .product-card:hover {
+        transform: translateY(-5px); /* Raise card on hover */
+    }
+
+    .product-card img {
+        max-width: 100%; /* Responsive image */
+        max-height: 150px; /* Limit image height */
+        border-radius: 5px; /* Rounded corners for the image */
+        margin-bottom: 10px; /* Space below the image */
+    }
+
+    .product-card h3 {
+        font-size: 1.2em; /* Size for product title */
+        margin: 10px 0;
+        color: #003366; /* Dark blue */
+    }
+
+    .product-card p {
+        margin: 5px 0;
+        color: black; /* Black text color */
+    }
+
+    .btn-container {
+        display: flex; /* Flexbox for buttons */
+        justify-content: center; /* Center align buttons */
+        gap: 10px; /* Space between buttons */
+        margin-top: 10px; /* Space above buttons */
+    }
+
+    .btn-primary {
+        padding: 5px 10px; /* Smaller padding */
+        background-color: #007bff; /* Blue button */
+        color: white;
+        border: none;
+        border-radius: 5px;
+        text-decoration: none;
+        transition: background-color 0.3s; /* Transition for hover effect */
+        font-size: 0.9em; /* Smaller font size */
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3; /* Lighter shade on hover */
+    }
+</style>
+
+<h2>Products Available</h2>
+
+<!-- Search Form with Price Range and College Filter -->
+<form method="GET" action="{% url 'product_list' %}" class="filter-form">
+    <div class="search-section">
+        <input type="text" name="q" placeholder="Search products..." value="{{ query|default:'' }}">
+        <button type="submit" class="search-button">Search Products</button>
+    </div>
+    
+    <button type="button" class="filter-button" onclick="toggleFilter()">Filter</button>
+    <div class="price-filter-section">
+        <div class="price-input">
+            <label for="min_price">Min Price:</label>
+            <input type="number" name="min_price" id="min_price" placeholder="Min price" value="{{ min_price|default:'' }}" min="0" step="0.01">
+        </div>
+        
+        <div class="price-input">
+            <label for="max_price">Max Price:</label>
+            <input type="number" name="max_price" id="max_price" placeholder="Max price" value="{{ max_price|default:'' }}" min="0" step="0.01">
+        </div>
+
+        <!-- College filter dropdown -->
+        <div class="price-input">
+            <label for="college">Filter by College:</label>
+            <select name="college" id="college">
+                <option value="">All Colleges</option>
+                {% for college in colleges %}
+                <option value="{{ college.id }}" {% if college.id|stringformat:"s" == selected_college %}selected{% endif %}>
+                    {{ college.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    
+    <button type="submit" class="search-button">Apply Filters</button>
+</form>
+
+<div class="product-list">
+    {% if products %}
+        {% for product in products %}
+        <div class="product-card">
+            <img src="{{ product.image.url }}" alt="{{ product.title }}">
+            <h3>{{ product.title }}</h3>
+            <p>Price: ₹{{ product.price }}</p>
+            <p>Condition: {{ product.condition }}</p>
+            <div class="btn-container">
+                <a href="{% url 'product_detail' product.pk %}" class="btn-primary">View Details</a>
+                {% if product.seller == request.user %}
+                <form action="{% url 'create_auction' product.pk %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-primary">Put to Auction</button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p>No products found matching your criteria.</p>
+    {% endif %}
+</div>
+
+<script>
+    function toggleFilter() {
+        const filterSection = document.querySelector('.price-filter-section');
+        filterSection.style.display = filterSection.style.display === 'flex' ? 'none' : 'flex';
+    }
+</script>
+
+{% endblock %}

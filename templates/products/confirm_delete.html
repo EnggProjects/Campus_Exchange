@@ -1,0 +1,22 @@
+{# templates/products/confirm_delete.html #}
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header bg-danger text-white">
+            <h3>Delete Product</h3>
+        </div>
+        <div class="card-body">
+            <h5>Are you sure you want to delete "{{ product.title }}"?</h5>
+            <p>This action cannot be undone.</p>
+            
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Confirm Delete</button>
+                <a href="{% url 'my_products' %}" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
