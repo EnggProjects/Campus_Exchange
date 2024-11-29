@@ -107,5 +107,4 @@ Chat with sellers for product inquiries.
 ## Contribution
 Feel free to fork this repository, create issues, and submit pull requests for improvements.
 
-## License
-This project is licensed under the MIT License. See the LICENSE file for details.
+
