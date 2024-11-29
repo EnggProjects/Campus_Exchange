@@ -1,4 +1,4 @@
-Campus Exchange: A Second-Hand Exchange Platform
+#Campus Exchange: A Second-Hand Exchange Platform
 Campus Exchange is a dedicated platform for college students to buy, sell, and auction second-hand items. Designed with security, affordability, and user-friendliness in mind, it fosters sustainability and community engagement within academic institutions.
 ________________________________________
 Features
